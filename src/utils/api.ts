@@ -1,10 +1,7 @@
-// CORS代理前缀
-const CORS_PROXY = 'https://corsproxy.io/?';
-
 // 英雄列表API地址
-const HERO_LIST_API = CORS_PROXY + encodeURIComponent('https://game.gtimg.cn/images/lol/act/img/js/heroList/hero_list.js');
+const HERO_LIST_API = 'https://game.gtimg.cn/images/lol/act/img/js/heroList/hero_list.js';
 // 英雄详情API地址模板
-const HERO_DETAIL_API = CORS_PROXY + encodeURIComponent('https://game.gtimg.cn/images/lol/act/img/js/hero/{id}.js');
+const HERO_DETAIL_API = 'https://game.gtimg.cn/images/lol/act/img/js/hero/{id}.js';
 
 // 英雄类型接口
 export interface Hero {
