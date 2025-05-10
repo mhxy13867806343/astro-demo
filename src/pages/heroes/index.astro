@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { fetchHeroList } from '../../utils/api';
 
 // 从 API 获取英雄列表数据
+// 静态生成模式下，这个调用只会在构建时执行一次
 const heroList = await fetchHeroList();
 
 // 计算每种角色的英雄数量

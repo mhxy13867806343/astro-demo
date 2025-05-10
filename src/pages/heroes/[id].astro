@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { fetchHeroDetail } from '../../utils/api';
+import { fetchHeroList, fetchHeroDetail } from '../../utils/api';
 
 // 获取路由参数
 const { id } = Astro.params;
@@ -11,6 +11,14 @@ const heroDetail = await fetchHeroDetail(id || '1');
 // 如果没有找到英雄数据，重定向到英雄列表页面
 if (!heroDetail) {
   return Astro.redirect('/heroes');
+}
+
+// 静态生成所有英雄详情页面
+export async function getStaticPaths() {
+  const heroList = await fetchHeroList();
+  return heroList.map(hero => ({
+    params: { id: hero.heroId }
+  }));
 }
 
 const { hero, skins, spells } = heroDetail;
