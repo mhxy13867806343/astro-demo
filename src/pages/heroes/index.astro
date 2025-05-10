@@ -1,0 +1,436 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fetchHeroList } from '../../utils/api';
+
+// 从 API 获取英雄列表数据
+const heroList = await fetchHeroList();
+
+// 计算每种角色的英雄数量
+const roleCounts = {
+  All: heroList.length,
+  Fighter: heroList.filter(hero => hero.roles?.includes('fighter')).length,
+  Mage: heroList.filter(hero => hero.roles?.includes('mage')).length,
+  Assassin: heroList.filter(hero => hero.roles?.includes('assassin')).length,
+  Tank: heroList.filter(hero => hero.roles?.includes('tank')).length,
+  Marksman: heroList.filter(hero => hero.roles?.includes('marksman')).length,
+  Support: heroList.filter(hero => hero.roles?.includes('support')).length
+};
+
+// 格式化显示数量（数量为1或0时不显示）
+const formatCount = (count: number) => count > 1 ? `(${count})` : '';
+---
+
+<Layout title="英雄联盟 - 英雄列表">
+  <!-- 收藏列表弹窗 -->
+  <div id="favorites-modal" class="fixed inset-0 bg-black/70 z-50 hidden">
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-lg bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+      <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+        <h3 class="text-xl font-bold text-white">收藏的英雄</h3>
+        <button id="close-favorites" class="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 max-h-96 overflow-y-auto">
+        <div id="favorites-list" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <!-- 收藏的英雄将在这里显示 -->
+        </div>
+        <div id="no-favorites" class="text-center py-8 text-gray-400">
+          您还没有收藏任何英雄。
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <main class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold">英雄资料</h1>
+      <button id="show-favorites" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        <span>我的收藏</span>
+        <span id="favorites-count" class="bg-white text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">0</span>
+      </button>
+    </div>
+    
+    <!-- 英雄筛选区域 -->
+    <div class="mb-6 space-y-4">
+      <!-- 搜索框 -->
+      <div>
+        <input 
+          type="text" 
+          id="hero-search"
+          placeholder="搜索英雄名称、称号或关键词"
+          class="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      
+      <!-- 英雄类型筛选 -->
+      <div class="flex flex-wrap gap-2">
+        <button class="role-filter-btn bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors" data-sort="All">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+            <span>所有英雄 {formatCount(roleCounts.All)}</span>
+          </span>
+        </button>
+        
+        <button class="role-filter-btn bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" data-sort="Fighter">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 3.5A4.5 4.5 0 0113 8a4.5 4.5 0 01-4.5 4.5A4.5 4.5 0 014 8a4.5 4.5 0 014.5-4.5z" />
+            </svg>
+            <span>战士 {formatCount(roleCounts.Fighter)}</span>
+          </span>
+        </button>
+        
+        <button class="role-filter-btn bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" data-sort="Mage">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>法师 {formatCount(roleCounts.Mage)}</span>
+          </span>
+        </button>
+        
+        <button class="role-filter-btn bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" data-sort="Assassin">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            </svg>
+            <span>刺客 {formatCount(roleCounts.Assassin)}</span>
+          </span>
+        </button>
+        
+        <button class="role-filter-btn bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" data-sort="Tank">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>坦克 {formatCount(roleCounts.Tank)}</span>
+          </span>
+        </button>
+        
+        <button class="role-filter-btn bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" data-sort="Marksman">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+            </svg>
+            <span>射手 {formatCount(roleCounts.Marksman)}</span>
+          </span>
+        </button>
+        
+        <button class="role-filter-btn bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" data-sort="Support">
+          <span class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <span>辅助 {formatCount(roleCounts.Support)}</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 搜索结果为空提示 -->
+    <div id="no-results" class="hidden w-full py-16 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <h3 class="mt-4 text-xl font-medium text-gray-400">没有找到符合条件的英雄</h3>
+      <p class="mt-2 text-gray-500">请尝试其他搜索关键词或选择不同的英雄类型</p>
+    </div>
+    
+    <!-- 英雄列表 -->
+    <div id="hero-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-8">
+      {heroList.map((hero) => (
+        <div class="hero-card-wrapper relative group">
+          <a 
+            href={`/heroes/${hero.heroId}`} 
+            class="hero-card block bg-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:shadow-lg"
+            data-name={hero.name}
+            data-title={hero.title}
+            data-tags={hero.keywords}
+            data-sort={hero.roles?.map(role => role.charAt(0).toUpperCase() + role.slice(1)).join(',')}
+            data-hero-id={hero.heroId}
+          >
+          <div class="relative">
+            <div class="hero-image-container w-full aspect-square relative overflow-hidden">
+              <div class="hero-image-loading absolute inset-0 bg-gray-700 animate-pulse"></div>
+              <img 
+                src={hero.avatar} 
+                alt={hero.name} 
+                class="w-full h-full object-cover opacity-0 transition-opacity duration-300"
+                loading="lazy"
+                onload="this.classList.remove('opacity-0'); this.previousElementSibling.classList.add('opacity-0');"
+              />
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+              <h3 class="text-white text-sm font-bold truncate">{hero.name}</h3>
+              <p class="text-gray-300 text-xs truncate">{hero.title}</p>
+            </div>
+          </div>
+          </a>
+          <button 
+            class="favorite-btn absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+            data-hero-id={hero.heroId}
+            data-hero-name={hero.name}
+            data-hero-avatar={hero.avatar}
+            title="收藏英雄"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300 favorite-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // 客户端功能
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('hero-search');
+    const heroCards = document.querySelectorAll('.hero-card');
+    const roleFilterBtns = document.querySelectorAll('.role-filter-btn');
+    const favoriteBtns = document.querySelectorAll('.favorite-btn');
+    const showFavoritesBtn = document.getElementById('show-favorites');
+    const closeFavoritesBtn = document.getElementById('close-favorites');
+    const favoritesModal = document.getElementById('favorites-modal');
+    const favoritesList = document.getElementById('favorites-list');
+    const noFavorites = document.getElementById('no-favorites');
+    const favoritesCount = document.getElementById('favorites-count');
+    
+    // 当前选中的英雄类型
+    let currentRole = 'All';
+    // 当前搜索关键词
+    let currentSearchTerm = '';
+    // 收藏的英雄列表
+    interface FavoriteHero {
+      id: string;
+      name: string;
+      avatar: string;
+    }
+    
+    let favorites: FavoriteHero[] = [];
+    
+    // 从本地存储加载收藏列表
+    function loadFavorites() {
+      const storedFavorites = localStorage.getItem('lol-favorites');
+      if (storedFavorites) {
+        try {
+          favorites = JSON.parse(storedFavorites);
+          updateFavoritesUI();
+        } catch (e) {
+          console.error('Failed to parse favorites:', e);
+          favorites = [];
+        }
+      }
+    }
+    
+    // 保存收藏列表到本地存储
+    function saveFavorites() {
+      localStorage.setItem('lol-favorites', JSON.stringify(favorites));
+      updateFavoritesUI();
+    }
+    
+    // 更新收藏按钮状态
+    function updateFavoriteButtons() {
+      favoriteBtns.forEach(btn => {
+        const heroId = btn.getAttribute('data-hero-id');
+        const isFavorite = favorites.some(fav => fav.id === heroId);
+        const icon = btn.querySelector('.favorite-icon');
+        
+        if (icon && isFavorite) {
+          icon.setAttribute('fill', 'currentColor');
+          icon.classList.add('text-red-500');
+          icon.classList.remove('text-gray-300');
+        } else if (icon) {
+          icon.setAttribute('fill', 'none');
+          icon.classList.remove('text-red-500');
+          icon.classList.add('text-gray-300');
+        }
+      });
+    }
+    
+    // 更新收藏列表UI
+    function updateFavoritesUI() {
+      // 更新收藏按钮状态
+      updateFavoriteButtons();
+      
+      // 更新收藏计数
+      if (favoritesCount) {
+        favoritesCount.textContent = favorites.length.toString();
+      }
+      
+      // 更新收藏列表
+      if (favoritesList && noFavorites) {
+        favoritesList.innerHTML = '';
+        
+        if (favorites.length === 0) {
+          noFavorites.classList.remove('hidden');
+        } else {
+          noFavorites.classList.add('hidden');
+          
+          favorites.forEach(hero => {
+            const heroElement = document.createElement('div');
+            heroElement.className = 'relative bg-gray-800 rounded-lg overflow-hidden';
+            heroElement.innerHTML = `
+              <a href="/heroes/${hero.id}" class="block">
+                <img src="${hero.avatar}" alt="${hero.name}" class="w-full aspect-square object-cover">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                  <h3 class="text-white text-sm font-bold truncate">${hero.name}</h3>
+                </div>
+              </a>
+              <button class="remove-favorite absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center" data-hero-id="${hero.id}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            `;
+            favoritesList.appendChild(heroElement);
+          });
+          
+          // 添加删除收藏事件
+          document.querySelectorAll('.remove-favorite').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const heroId = btn.getAttribute('data-hero-id') || '';
+              if (heroId) {
+                removeFavorite(heroId);
+              }
+            });
+          });
+        }
+      }
+    }
+    
+    // 添加收藏
+    function addFavorite(heroId: string, heroName: string, heroAvatar: string) {
+      if (!favorites.some(hero => hero.id === heroId)) {
+        favorites.push({
+          id: heroId,
+          name: heroName,
+          avatar: heroAvatar
+        });
+        saveFavorites();
+      }
+    }
+    
+    // 移除收藏
+    function removeFavorite(heroId: string) {
+      favorites = favorites.filter(hero => hero.id !== heroId);
+      saveFavorites();
+    }
+    
+    // 搜索功能
+    searchInput?.addEventListener('input', (e) => {
+      currentSearchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+      filterHeroes();
+    });
+    
+    // 英雄类型筛选功能
+    roleFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 更新按钮样式
+        roleFilterBtns.forEach(b => {
+          b.classList.remove('bg-blue-600');
+          b.classList.add('bg-gray-700');
+        });
+        btn.classList.remove('bg-gray-700');
+        btn.classList.add('bg-blue-600');
+        
+        // 更新当前选中的英雄类型
+        currentRole = btn.getAttribute('data-sort') || 'All';
+        filterHeroes();
+      });
+    });
+    
+    // 收藏按钮点击事件
+    favoriteBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const heroId = btn.getAttribute('data-hero-id') || '';
+        const heroName = btn.getAttribute('data-hero-name') || '';
+        const heroAvatar = btn.getAttribute('data-hero-avatar') || '';
+        
+        // 检查是否已收藏
+        const isFavorite = favorites.some(hero => hero.id === heroId);
+        
+        if (isFavorite) {
+          removeFavorite(heroId);
+        } else if (heroId && heroName && heroAvatar) {
+          addFavorite(heroId, heroName, heroAvatar);
+        }
+      });
+    });
+    
+    // 显示收藏列表弹窗
+    showFavoritesBtn?.addEventListener('click', () => {
+      favoritesModal?.classList.remove('hidden');
+    });
+    
+    // 关闭收藏列表弹窗
+    closeFavoritesBtn?.addEventListener('click', () => {
+      favoritesModal?.classList.add('hidden');
+    });
+    
+    // 点击弹窗外部关闭
+    favoritesModal?.addEventListener('click', (e) => {
+      if (e.target === favoritesModal) {
+        favoritesModal.classList.add('hidden');
+      }
+    });
+    
+    // 筛选英雄函数
+    function filterHeroes() {
+      const heroList = document.getElementById('hero-list');
+      const noResults = document.getElementById('no-results');
+      let visibleCount = 0;
+      
+      heroCards.forEach((card) => {
+        const heroName = card.getAttribute('data-name')?.toLowerCase() || '';
+        const heroTitle = card.getAttribute('data-title')?.toLowerCase() || '';
+        const heroTags = card.getAttribute('data-tags')?.toLowerCase() || '';
+        const heroSorts = card.getAttribute('data-sort')?.split(',') || [];
+        
+        // 搜索条件
+        const matchesSearch = 
+          heroName.includes(currentSearchTerm) || 
+          heroTitle.includes(currentSearchTerm) || 
+          heroTags.includes(currentSearchTerm);
+        
+        // 英雄类型筛选条件
+        const matchesRole = currentRole === 'All' || heroSorts.includes(currentRole);
+        
+        // 同时满足搜索和筛选条件
+        const wrapper = card.closest('.hero-card-wrapper');
+        if (matchesSearch && matchesRole) {
+          wrapper?.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          wrapper?.classList.add('hidden');
+        }
+      });
+      
+      // 显示或隐藏空结果提示
+      if (visibleCount === 0) {
+        heroList?.classList.add('hidden');
+        noResults?.classList.remove('hidden');
+      } else {
+        heroList?.classList.remove('hidden');
+        noResults?.classList.add('hidden');
+      }
+    }
+    
+    // 初始化加载收藏
+    loadFavorites();
+  });
+</script>

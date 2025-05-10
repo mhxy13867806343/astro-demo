@@ -1,0 +1,272 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fetchHeroDetail } from '../../utils/api';
+
+// 获取路由参数
+const { id } = Astro.params;
+
+// 从 API 获取英雄详情数据
+const heroDetail = await fetchHeroDetail(id || '1');
+
+// 如果没有找到英雄数据，重定向到英雄列表页面
+if (!heroDetail) {
+  return Astro.redirect('/heroes');
+}
+
+const { hero, skins, spells } = heroDetail;
+
+// 计算属性值的百分比宽度
+const getStatWidth = (value: string) => {
+  const num = parseInt(value, 10);
+  return `${Math.min(num * 10, 100)}%`;
+};
+
+// 获取英雄角色标签
+const roleLabels: Record<string, string> = {
+  fighter: '战士',
+  mage: '法师',
+  assassin: '刺客',
+  tank: '坦克',
+  marksman: '射手',
+  support: '辅助'
+};
+
+// 将英雄角色数组转换为中文标签
+const roleNames = hero.roles ? hero.roles.map(role => roleLabels[role] || role) : [];
+---
+
+<Layout title={`${hero.name} - ${hero.title} | 英雄联盟`}>
+  <main class="container mx-auto px-4 py-8">
+    <div class="mb-4">
+      <a href="/heroes" class="text-blue-500 hover:underline flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        返回英雄列表
+      </a>
+    </div>
+
+    <!-- 英雄基本信息 -->
+    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl">
+      <!-- 英雄头部信息 -->
+      <div class="relative">
+        {skins && skins.length > 0 && (
+          <img 
+            src={skins[0].mainImg || `https://game.gtimg.cn/images/lol/act/img/skin/big${hero.heroId}000.jpg`}
+            alt={hero.name}
+            class="w-full h-64 object-cover object-center"
+          />
+        )}
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+          <div class="flex items-end gap-4">
+            <img 
+              src={hero.avatar}
+              alt={hero.name}
+              class="w-24 h-24 rounded-full border-4 border-yellow-500 object-cover"
+            />
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h1 class="text-3xl font-bold text-white">{hero.name}</h1>
+                  <p class="text-xl text-gray-300">{hero.title}</p>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    {roleNames.map(role => (
+                      <span class="bg-blue-600/60 text-white px-2 py-1 rounded text-xs">{role}</span>
+                    ))}
+                  </div>
+                </div>
+                <button 
+                  id="favorite-btn"
+                  class="favorite-btn w-12 h-12 rounded-full bg-black/50 flex items-center justify-center"
+                  data-hero-id={hero.heroId}
+                  data-hero-name={hero.name}
+                  data-hero-avatar={hero.avatar}
+                  title="收藏英雄"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300 favorite-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 英雄详细信息 -->
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- 左侧：技能信息 -->
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-4">技能详情</h2>
+          <div class="space-y-4">
+            {spells && spells.map(spell => (
+              <div class="bg-gray-700 rounded-lg p-4">
+                <div class="flex items-start gap-4">
+                  <img 
+                    src={spell.abilityIconPath}
+                    alt={spell.name}
+                    class="w-12 h-12 rounded"
+                  />
+                  <div>
+                    <h3 class="text-lg font-bold text-white">{spell.name}</h3>
+                    <p class="text-gray-300 text-sm">{spell.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- 右侧：属性和皮肤 -->
+        <div>
+          <!-- 属性 -->
+          <h2 class="text-2xl font-bold text-white mb-4">英雄属性</h2>
+          <div class="space-y-3 mb-8">
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-300">攻击</span>
+                <span class="text-white">{hero.attack}/10</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div class="bg-red-600 h-2.5 rounded-full" style={`width: ${getStatWidth(hero.attack)}`}></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-300">防御</span>
+                <span class="text-white">{hero.defense}/10</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div class="bg-green-600 h-2.5 rounded-full" style={`width: ${getStatWidth(hero.defense)}`}></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-300">魔法</span>
+                <span class="text-white">{hero.magic}/10</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div class="bg-blue-600 h-2.5 rounded-full" style={`width: ${getStatWidth(hero.magic)}`}></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-300">难度</span>
+                <span class="text-white">{hero.difficulty}/10</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div class="bg-purple-600 h-2.5 rounded-full" style={`width: ${getStatWidth(hero.difficulty)}`}></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 皮肤 -->
+          <h2 class="text-2xl font-bold text-white mb-4">英雄皮肤</h2>
+          <div class="grid grid-cols-2 gap-4">
+            {skins && skins.slice(0, 6).map(skin => (
+              <div class="bg-gray-700 rounded-lg overflow-hidden">
+                <img 
+                  src={skin.iconImg || `https://game.gtimg.cn/images/lol/act/img/skin/small${skin.skinId}.jpg`}
+                  alt={skin.name}
+                  class="w-full aspect-video object-cover"
+                />
+                <div class="p-2">
+                  <p class="text-white text-sm truncate">{skin.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const favoriteBtn = document.getElementById('favorite-btn');
+    
+    if (favoriteBtn) {
+      const heroId = favoriteBtn.getAttribute('data-hero-id') || '';
+      const heroName = favoriteBtn.getAttribute('data-hero-name') || '';
+      const heroAvatar = favoriteBtn.getAttribute('data-hero-avatar') || '';
+      const icon = favoriteBtn.querySelector('.favorite-icon');
+      
+      // 收藏的英雄列表
+      interface FavoriteHero {
+        id: string;
+        name: string;
+        avatar: string;
+      }
+      
+      let favorites: FavoriteHero[] = [];
+      
+      // 从本地存储加载收藏列表
+      function loadFavorites() {
+        const storedFavorites = localStorage.getItem('lol-favorites');
+        if (storedFavorites) {
+          try {
+            favorites = JSON.parse(storedFavorites);
+            updateFavoriteButton();
+          } catch (e) {
+            console.error('Failed to parse favorites:', e);
+            favorites = [];
+          }
+        }
+      }
+      
+      // 保存收藏列表到本地存储
+      function saveFavorites() {
+        localStorage.setItem('lol-favorites', JSON.stringify(favorites));
+        updateFavoriteButton();
+      }
+      
+      // 更新收藏按钮状态
+      function updateFavoriteButton() {
+        const isFavorite = favorites.some(hero => hero.id === heroId);
+        
+        if (icon && isFavorite) {
+          icon.setAttribute('fill', 'currentColor');
+          icon.classList.add('text-red-500');
+          icon.classList.remove('text-gray-300');
+        } else if (icon) {
+          icon.setAttribute('fill', 'none');
+          icon.classList.remove('text-red-500');
+          icon.classList.add('text-gray-300');
+        }
+      }
+      
+      // 添加收藏
+      function addFavorite(heroId: string, heroName: string, heroAvatar: string) {
+        if (!favorites.some(hero => hero.id === heroId)) {
+          favorites.push({
+            id: heroId,
+            name: heroName,
+            avatar: heroAvatar
+          });
+          saveFavorites();
+        }
+      }
+      
+      // 移除收藏
+      function removeFavorite(heroId: string) {
+        favorites = favorites.filter(hero => hero.id !== heroId);
+        saveFavorites();
+      }
+      
+      // 收藏按钮点击事件
+      favoriteBtn.addEventListener('click', () => {
+        const isFavorite = favorites.some(hero => hero.id === heroId);
+        
+        if (isFavorite) {
+          removeFavorite(heroId);
+        } else if (heroId && heroName && heroAvatar) {
+          addFavorite(heroId, heroName, heroAvatar);
+        }
+      });
+      
+      // 初始化加载收藏
+      loadFavorites();
+    }
+  });
+</script>

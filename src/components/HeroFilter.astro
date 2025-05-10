@@ -1,0 +1,79 @@
+---
+import { getHeroRoleTypes } from '../utils/api';
+
+// 获取英雄角色类型
+const roleTypes = getHeroRoleTypes();
+---
+
+<div class="bg-blue-900/30 rounded-lg p-4 shadow-md">
+  <div class="flex flex-wrap items-center gap-4">
+    <!-- 搜索框 -->
+    <div class="relative flex-grow">
+      <input
+        type="text"
+        id="hero-search"
+        placeholder="搜索英雄名称、称号或关键词"
+        class="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+      />
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-3 top-2.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+    
+    <!-- 角色筛选 -->
+    <div class="flex flex-wrap gap-2">
+      <button class="role-filter-btn bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors" data-role="all">
+        所有英雄
+      </button>
+      
+      {roleTypes.map(role => (
+        <button 
+          class="role-filter-btn bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors" 
+          data-role={role.id}
+        >
+          {role.name}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  // 客户端角色筛选功能
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.role-filter-btn');
+    const heroCards = document.querySelectorAll('.hero-card');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // 更新按钮样式
+        filterButtons.forEach(btn => {
+          btn.classList.remove('bg-blue-600');
+          btn.classList.add('bg-gray-700');
+        });
+        button.classList.remove('bg-gray-700');
+        button.classList.add('bg-blue-600');
+        
+        const selectedRole = button.getAttribute('data-role');
+        
+        // 如果选择"所有英雄"，显示所有卡片
+        if (selectedRole === 'all') {
+          heroCards.forEach(card => {
+            card.classList.remove('hidden');
+          });
+          return;
+        }
+        
+        // 否则根据角色筛选
+        heroCards.forEach(card => {
+          const heroRoles = card.getAttribute('data-roles')?.split(',') || [];
+          if (heroRoles.includes(selectedRole)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
+  });
+</script>

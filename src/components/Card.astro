@@ -1,0 +1,57 @@
+---
+// Card.astro - 一个简单的卡片组件
+// 定义组件的属性（Props）
+interface Props {
+  title: string;
+  body: string;
+  href?: string;
+}
+
+// 使用解构来获取传入的属性
+const { href, title, body } = Astro.props;
+---
+
+<div class="card">
+  <div class="content">
+    <h2>
+      {href ? <a href={href}>{title}</a> : title}
+    </h2>
+    <p>{body}</p>
+  </div>
+</div>
+
+<style>
+  .card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    background-color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1rem;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .content h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #4f39fa;
+  }
+  
+  .content a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  .content a:hover {
+    text-decoration: underline;
+  }
+  
+  .content p {
+    margin-bottom: 0;
+    color: #4b5563;
+  }
+</style>

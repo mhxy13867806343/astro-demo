@@ -1,48 +1,58 @@
-# Astro Starter Kit: Basics
+# 英雄联盟英雄资料库
 
-```sh
-npm create astro@latest -- --template basics
-```
+这是一个使用Astro框架构建的英雄联盟英雄资料库网站，提供英雄列表和详情页面，支持响应式布局和模糊搜索功能。
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## 🚀 功能特点
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- **英雄列表展示**：以卡片形式展示所有英雄，包含头像、名称和称号
+- **英雄详情页**：展示英雄的详细信息，包括技能、属性和皮肤
+- **模糊搜索**：支持通过英雄名称、称号或关键词进行搜索
+- **角色筛选**：可以按照英雄角色类型（战士、法师、刺客等）进行筛选
+- **响应式布局**：适配各种屏幕尺寸，从手机到桌面设备
+- **暗色主题**：默认使用暗色主题，符合游戏风格
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## 📱 页面展示
 
-## 🚀 Project Structure
+### 英雄列表页
 
-Inside of your Astro project, you'll see the following folders and files:
+- 顶部导航栏：网站标题和主题切换
+- 搜索和筛选区域：可以输入关键词搜索或按角色筛选
+- 英雄卡片网格：响应式布局，自动适应不同屏幕尺寸
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+### 英雄详情页
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+- 英雄基本信息：头像、名称、称号和角色类型
+- 技能详情：技能图标、名称和描述
+- 英雄属性：攻击、防御、魔法和难度的可视化展示
+- 英雄皮肤：展示该英雄的皮肤列表
 
-## 🧞 Commands
+## 🔧 技术栈
 
-All commands are run from the root of the project, from a terminal:
+- **Astro**：核心框架，用于构建高性能网站
+- **Tailwind CSS**：用于样式和响应式设计
+- **DaisyUI**：Tailwind CSS组件库，提供UI组件
+- **TypeScript**：提供类型安全和开发体验
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## 📊 数据来源
 
-## 👀 Want to learn more?
+本项目使用英雄联盟官方API获取英雄数据：
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- 英雄列表：`https://game.gtimg.cn/images/lol/act/img/js/heroList/hero_list.js`
+- 英雄详情：`https://game.gtimg.cn/images/lol/act/img/js/hero/{id}.js`
+
+## 🧞 命令
+
+所有命令都在项目根目录下运行：
+
+| 命令                     | 操作                                |
+| :------------------------ | :---------------------------------- |
+| `npm install`             | 安装依赖                           |
+| `npm run dev`             | 启动本地开发服务器，地址为 `localhost:4321` |
+| `npm run build`           | 构建生产版本到 `./dist/` 目录      |
+| `npm run preview`         | 在部署前本地预览生产构建           |
+
+## 📝 注意事项
+
+- 本项目仅用于学习和展示目的，非官方网站
+- 所有数据和图片版权归腾讯公司所有
+- 响应式设计支持从移动设备到桌面设备的各种屏幕尺寸

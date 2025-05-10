@@ -1,0 +1,44 @@
+---
+import type { Hero } from '../utils/api';
+
+interface Props {
+  hero: Hero;
+}
+
+const { hero } = Astro.props;
+
+// 获取英雄角色标签
+const roleLabels: Record<string, string> = {
+  fighter: '战士',
+  mage: '法师',
+  assassin: '刺客',
+  tank: '坦克',
+  marksman: '射手',
+  support: '辅助'
+};
+
+// 将英雄角色数组转换为中文标签
+const roleNames = hero.roles ? hero.roles.map(role => roleLabels[role] || role) : [];
+---
+
+<a 
+  href={`/heroes/${hero.heroId}`} 
+  class="hero-card block bg-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:shadow-lg"
+  data-name={hero.name}
+  data-title={hero.title}
+  data-tags={hero.keywords}
+>
+  <div class="relative">
+    <img 
+      src={hero.avatar} 
+      alt={hero.name} 
+      class="w-full aspect-square object-cover"
+      loading="lazy"
+      onerror="this.src='/images/hero-placeholder.png'"
+    />
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+      <h3 class="text-white text-sm font-bold truncate">{hero.name}</h3>
+      <p class="text-gray-300 text-xs truncate">{hero.title}</p>
+    </div>
+  </div>
+</a>

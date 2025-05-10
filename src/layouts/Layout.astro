@@ -1,22 +1,82 @@
+---
+import '../styles/base.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { title = '英雄联盟', description = '英雄联盟英雄资料库 - 查看所有英雄的详细信息、技能和皮肤' } = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN" data-theme="dark">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<meta name="description" content={description} />
+		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+	<body class="bg-gray-900 text-gray-200">
+		<div class="min-h-screen flex flex-col">
+			<header class="navbar bg-gray-900 shadow-md border-b border-blue-900/50">
+				<div class="container mx-auto">
+					<div class="flex-1">
+						<a href="/heroes" class="flex items-center gap-2">
+							<span class="text-xl font-bold text-blue-400">英雄联盟</span>
+							<span class="text-gray-400">|</span>
+							<span class="text-gray-300">英雄资料库</span>
+						</a>
+					</div>
+					<div class="flex-none">
+						<ul class="menu menu-horizontal px-1">
+							<li><a href="/heroes" class="font-medium text-gray-300 hover:text-blue-400">英雄列表</a></li>
+							<li>
+								<details>
+									<summary class="text-gray-300 hover:text-blue-400">主题</summary>
+									<ul class="p-2 bg-gray-800 rounded-t-none border border-gray-700">
+										<li><a data-theme-toggle="light" class="text-gray-300 hover:text-blue-400">亮色</a></li>
+										<li><a data-theme-toggle="dark" class="text-gray-300 hover:text-blue-400">暗色</a></li>
+									</ul>
+								</details>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</header>
+			<main class="flex-grow container mx-auto p-4">
+				<slot />
+			</main>
+			<footer class="footer footer-center p-4 bg-gray-800 text-gray-400 border-t border-blue-900/50">
+				<div>
+					<p>英雄联盟资料库 - 使用 Astro + Tailwind CSS + DaisyUI 构建</p>
+					<p class="text-xs mt-1">本站仅用于学习和展示，非官方网站</p>
+				</div>
+			</footer>
+		</div>
 	</body>
 </html>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
+<script>
+// 主题切换功能
+document.addEventListener('DOMContentLoaded', () => {
+	const themeToggles = document.querySelectorAll('[data-theme-toggle]');
+	themeToggles.forEach(toggle => {
+		toggle.addEventListener('click', () => {
+			const theme = toggle.getAttribute('data-theme-toggle');
+			if (theme) {
+				document.documentElement.setAttribute('data-theme', theme);
+				localStorage.setItem('theme', theme);
+			}
+		});
+	});
+
+	// 从本地存储加载主题
+	const savedTheme = localStorage.getItem('theme');
+	if (savedTheme) {
+		document.documentElement.setAttribute('data-theme', savedTheme);
 	}
-</style>
+});
+</script>

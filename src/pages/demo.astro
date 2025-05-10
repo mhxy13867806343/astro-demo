@@ -1,0 +1,144 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+
+// 在组件脚本中可以定义变量、导入数据或执行JavaScript
+const pageTitle = "Astro 组件演示";
+
+// 示例数据
+const cards = [
+  {
+    title: "Astro 组件",
+    body: "Astro 组件是构建 Astro 网站的基本单元，它们是纯静态的HTML片段。",
+    href: "https://docs.astro.build/zh-cn/core-concepts/astro-components/"
+  },
+  {
+    title: "Astro 布局",
+    body: "布局组件帮助你共享常见的UI结构，如页眉、导航栏和页脚。",
+    href: "https://docs.astro.build/zh-cn/core-concepts/layouts/"
+  },
+  {
+    title: "Astro 路由",
+    body: "Astro 使用基于文件的路由系统，src/pages/ 目录中的每个 .astro 文件都成为一个页面。",
+    href: "https://docs.astro.build/zh-cn/core-concepts/routing/"
+  }
+];
+---
+
+<Layout>
+  <main>
+    <h1>{pageTitle}</h1>
+    
+    <p class="intro">
+      这个页面展示了如何在 Astro 中创建和使用组件。下面的卡片是使用同一个 <code>Card.astro</code> 组件渲染的，
+      但每个卡片接收不同的属性（props）。
+    </p>
+    
+    <section class="cards">
+      {cards.map(card => (
+        <Card
+          title={card.title}
+          body={card.body}
+          href={card.href}
+        />
+      ))}
+    </section>
+    
+    <div class="code-example">
+      <h2>组件用法示例</h2>
+      <pre><code>---
+import Card from '../components/Card.astro';
+---
+
+&lt;Card
+  title="卡片标题"
+  body="卡片内容描述"
+  href="https://example.com"
+/&gt;</code></pre>
+    </div>
+    
+    <div class="navigation">
+      <a href="/" class="button">返回首页</a>
+      <a href="/guide" class="button secondary">查看指南</a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: system-ui, sans-serif;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    color: #4f39fa;
+    margin-bottom: 1.5rem;
+  }
+  
+  .intro {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #4b5563;
+  }
+  
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  
+  .code-example {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .code-example h2 {
+    font-size: 1.5rem;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+  
+  pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  
+  code {
+    font-family: monospace;
+  }
+  
+  .navigation {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .button {
+    display: inline-block;
+    background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .button.secondary {
+    background: white;
+    color: #3245ff;
+    border: 1px solid #3245ff;
+  }
+  
+  .button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+</style>

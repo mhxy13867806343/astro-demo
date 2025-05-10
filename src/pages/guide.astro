@@ -1,0 +1,142 @@
+---
+import Layout from '../layouts/Layout.astro';
+const greeting = 'Astro 基础指南';
+const list: string[] = ['什么是 Astro?', 'Astro 项目结构', 'Astro 组件', 'Astro 特性', '创建新页面'];
+---
+
+<Layout>
+  <main>
+    <ul>
+      {list.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+    </ul>
+    <h1>Astro 基础指南</h1>
+    
+    <section>
+      <h2>什么是 Astro?</h2>
+      <p>Astro 是一个现代的静态站点生成器，专注于内容驱动的网站。它允许你使用你喜欢的UI组件（React, Vue, Svelte等）但最终输出的是纯HTML和CSS，提供极快的加载速度。</p>
+    </section>
+
+    <section>
+      <h2>Astro 项目结构</h2>
+      <ul>
+        <li><strong>src/pages/</strong> - 所有放在这个目录的 .astro 文件都会自动成为网站的页面</li>
+        <li><strong>src/components/</strong> - 可重用的UI组件</li>
+        <li><strong>src/layouts/</strong> - 页面布局组件</li>
+        <li><strong>src/assets/</strong> - 图片、字体等静态资源</li>
+        <li><strong>public/</strong> - 不需要处理的静态文件，会直接复制到构建目录</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Astro 组件</h2>
+      <p>Astro 组件是 Astro 的基本构建块，它们有两个主要部分：</p>
+      <ol>
+        <li><strong>组件脚本</strong> - 包含在 --- 之间的代码，用于导入、定义变量和执行JavaScript</li>
+        <li><strong>组件模板</strong> - HTML 模板，可以使用组件脚本中定义的变量</li>
+      </ol>
+      <pre><code>---
+// 组件脚本 (在服务器上执行)
+const greeting = "你好，世界！";
+---
+
+<!-- 组件模板 (发送到浏览器) -->
+<h1>{greeting}</h1></code></pre>
+    </section>
+
+    <section>
+      <h2>Astro 特性</h2>
+      <ul>
+        <li><strong>零JS默认</strong> - 默认情况下不发送JavaScript到浏览器</li>
+        <li><strong>岛屿架构</strong> - 允许你在需要的地方添加交互性</li>
+        <li><strong>服务器优先</strong> - 尽可能在服务器上完成工作</li>
+        <li><strong>内容集合</strong> - 管理和验证内容</li>
+        <li><strong>UI不可知论</strong> - 支持React, Vue, Svelte等多种框架</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>创建新页面</h2>
+      <p>在 Astro 中创建新页面非常简单，只需在 <code>src/pages</code> 目录中创建一个新的 .astro 文件。文件路径将决定页面的URL。</p>
+      <ul>
+        <li><code>src/pages/index.astro</code> → <code>/</code></li>
+        <li><code>src/pages/about.astro</code> → <code>/about</code></li>
+        <li><code>src/pages/blog/index.astro</code> → <code>/blog</code></li>
+        <li><code>src/pages/blog/post-1.astro</code> → <code>/blog/post-1</code></li>
+      </ul>
+    </section>
+
+    <div class="navigation">
+      <a href="/" class="button">返回首页</a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: system-ui, sans-serif;
+  }
+  h1 {
+    font-size: 2.5rem;
+    color: #4f39fa;
+    margin-bottom: 2rem;
+  }
+  h2 {
+    font-size: 1.8rem;
+    color: #111827;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+  }
+  section {
+    margin-bottom: 2.5rem;
+  }
+  p, li {
+    line-height: 1.6;
+    color: #4b5563;
+  }
+  ul, ol {
+    padding-left: 1.5rem;
+  }
+  pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  code {
+    font-family: monospace;
+    background-color: #f3f4f6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+  }
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+  .navigation {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+  }
+  .button {
+    display: inline-block;
+    background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+</style>
