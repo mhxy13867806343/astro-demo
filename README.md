@@ -4,7 +4,7 @@
 
 ## 🌐 在线访问
 
-- **在线演示**：[https://astro-demo-chi-seven.vercel.app/heroes](https://astro-demo-chi-seven.vercel.app/heroes)
+- **在线演示**：[astro-demo-chi-seven.vercel.app/heroes](https://astro-demo-chi-seven.vercel.app/heroes)
 - **部署平台**：Vercel
 
 ## 🚀 功能特点
