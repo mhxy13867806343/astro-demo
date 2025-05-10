@@ -62,22 +62,48 @@ export interface HeroDetail {
 
 // 获取英雄列表
 export async function fetchHeroList(): Promise<Hero[]> {
-  try {
-    const response = await fetch(`${HERO_LIST_API}?ts=${Date.now()}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch hero list: ${response.status}`);
+  // 最大重试次数
+  const MAX_RETRIES = 3;
+  let retries = 0;
+  
+  while (retries < MAX_RETRIES) {
+    try {
+      // 添加随机参数避免缓存问题
+      const response = await fetch(`${HERO_LIST_API}?ts=${Date.now()}&r=${Math.random()}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch hero list: ${response.status}`);
+      }
+      const data = await response.json();
+      
+      // 验证数据结构
+      if (!data || !data.hero || !Array.isArray(data.hero)) {
+        throw new Error('Invalid hero list data structure');
+      }
+      
+      // 添加头像URL
+      return data.hero.map((hero: Hero) => ({
+        ...hero,
+        avatar: `https://game.gtimg.cn/images/lol/act/img/champion/${hero.alias}.png`
+      }));
+    } catch (error) {
+      retries++;
+      console.error(`Error fetching hero list (attempt ${retries}/${MAX_RETRIES}):`, error);
+      
+      if (retries >= MAX_RETRIES) {
+        console.warn('Maximum retries reached for hero list, returning fallback data');
+        // 返回一些基本的英雄数据作为备选，确保构建不会失败
+        return [
+          { heroId: '1', name: '黑暗之女', alias: 'Annie', title: '安妮', roles: ['mage'], attack: '2', defense: '3', magic: '10', difficulty: '6', selectAudio: '', banAudio: '', isWeekFree: '0', keywords: '黑暗之女,安妮,Annie,火女' },
+          { heroId: '2', name: '狂战士', alias: 'Olaf', title: '奥拉夫', roles: ['fighter', 'tank'], attack: '9', defense: '5', magic: '3', difficulty: '3', selectAudio: '', banAudio: '', isWeekFree: '0', keywords: '狂战士,奥拉夫,Olaf' }
+        ];
+      }
+      
+      // 等待一段时间后重试
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    const data = await response.json();
-    
-    // 添加头像URL
-    return data.hero.map((hero: Hero) => ({
-      ...hero,
-      avatar: `https://game.gtimg.cn/images/lol/act/img/champion/${hero.alias}.png`
-    }));
-  } catch (error) {
-    console.error('Error fetching hero list:', error);
-    return [];
   }
+  
+  return [];
 }
 
 // 获取英雄详情

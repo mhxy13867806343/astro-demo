@@ -2,5 +2,11 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "framework": "astro"
+  "framework": "astro",
+  "outputDirectory": "dist",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/heroes/.*", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
